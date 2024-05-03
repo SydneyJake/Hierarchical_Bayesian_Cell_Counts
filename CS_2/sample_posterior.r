@@ -3,7 +3,7 @@ library(cmdstanr)
 library(rstan)
 
 # Load the data
-data <- read_csv("het-ko-counts/data.csv")
+data <- read_csv("data.csv")
 print(head(data))
 
 # Pivot wider into A x R matrix
@@ -20,7 +20,7 @@ stan_data <- list("A"                = nrow(data),
                   "y"                = as.matrix(data[,-c(1:2)])) #  drop first two indexing columns
 
 # Compile the model
-mod <- cmdstan_model("models/model_inflate.stan")
+mod <- cmdstan_model("models/model_hs.stan")
 
 # Sample the model
 fit <- mod$sample(data            = stan_data,
@@ -31,4 +31,4 @@ fit <- mod$sample(data            = stan_data,
                   seed            = 2017) # reproducibility
 # Save fit
 fit <- read_stan_csv(fit$output_files()) # Save output from cmdstanr in a way that preserves param layout.
-saveRDS(fit, "fit_inflate.rds")
+saveRDS(fit, "fits/fit_hs.rds")
