@@ -20,7 +20,7 @@ stan_data <- list("A"                = nrow(data),
                   "y"                = as.matrix(data[,-c(1:2)])) #  drop first two indexing columns
 
 # Compile the model
-mod <- cmdstan_model("models/model_Inflate.stan")
+mod <- cmdstan_model("models/model_inflate.stan")
 
 # Sample the model
 fit <- mod$sample(data            = stan_data,
