@@ -9,13 +9,13 @@ parameters{
   array[G] vector<lower=0>[R] tau;
   array[G] vector[R]          theta;
   array[A] vector[R]          gamma_raw;
-  array[A] vector<lower=0>[R] lambda;
+  array[A] vector<lower=0>[R] kappa;
 }
 transformed parameters{
   array[A] vector[R] gamma;
 
   for(i in 1:A){
-    gamma[i]  = theta[group_idx[i]] + tau[group_idx[i]] .* gamma_raw[i] .* lambda[i];
+    gamma[i]  = theta[group_idx[i]] + tau[group_idx[i]] .* gamma_raw[i] .* kappa[i];
   }
 }
 model{
@@ -29,7 +29,7 @@ model{
   // Random effects
   for(i in 1:A){
     gamma_raw[i] ~ std_normal();
-    lambda[i]    ~ std_normal();
+    kappa[i]    ~ std_normal();
   }
 
   // Observed Data

@@ -43,15 +43,14 @@ mean_diffs_inflate <- (mus[,1,] - mus[,2,] ) * log2(exp(1))
 bayesian_res <- bind_rows(calc_hdi(mean_diffs_hs, "hs"), calc_hdi(mean_diffs_inflate, "inflate"))
 
 # t test
-data$counts[data$counts == 0] <- 1
+data$counts[data$counts == 0] <- 1 # add zeroes, cant log otherwise
 data$counts <- log(data$counts)
 
 data$regions <- factor(data$regions)
 data$group   <- factor(data$group)
 
 split_data <- split(data, f=data$regions)
-freq_res   <- lapply(split_data, FUN=function(x) run_t_test(x,"het", "ko"))
-freq_res   <- bind_rows(freq_res, .id = "region")
+freq_res   <- bind_rows(lapply(split_data, FUN=function(x) run_t_test(x,"het", "ko")),.id = "region")
 
 # Plotting
 res_df <- bind_rows(freq_res, bayesian_res)

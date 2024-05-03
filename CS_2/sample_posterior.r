@@ -4,7 +4,6 @@ library(rstan)
 
 # Load the data
 data <- read_csv("data.csv")
-print(head(data))
 
 # Pivot wider into A x R matrix
 data <- data %>% pivot_wider(id_cols     = c(animal_idx, group_idx),
