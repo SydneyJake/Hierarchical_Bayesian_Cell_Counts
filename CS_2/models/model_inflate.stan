@@ -61,3 +61,13 @@ model{
     }
   }
 }
+generated quantities{
+  array[A, R] int y_rep; // posterior predictions
+
+  for(i in 1:A){
+    for(j in 1:R){
+      int ind = bernoulli_rng(pi); // flip a coin with probability P(Heads) = pi.
+      y_rep[i] = (1-ind) * poisson_log_rng(gamma[i,j]); // If heads y_rep[i] = 0, else draw from a Poisson.
+    }
+  }
+}

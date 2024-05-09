@@ -37,3 +37,13 @@ model{
     y[i] ~ poisson_log(gamma[i]);
   }
 }
+generated quantities{
+  array[A, R] int y_rep;
+
+  for(i in 1:A){
+    for(j in 1:R){
+      y_rep[i, j] = poisson_log_rng(gamma[i,j]); // Posterior predictions
+    }
+  }
+
+}
