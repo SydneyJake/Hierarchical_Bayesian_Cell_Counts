@@ -33,6 +33,6 @@ generated quantities{
   array[N] int y_rep;
 
   for(i in 1:N){
-      y_rep[i] = poisson_rng(E[i] + gamma[i]); // posterior predictions
+      y_rep[i] = poisson_log_rng(E[i] + gamma[i]); // posterior predictions
   }
 }
