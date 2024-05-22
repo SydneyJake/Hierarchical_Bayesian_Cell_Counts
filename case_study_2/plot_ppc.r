@@ -13,7 +13,7 @@ data <- data %>% pivot_wider(id_cols     = c(animal_idx, group_idx),
 
 
 # Load the fit
-fit <- readRDS("fits/fit_inflate.rds")
+fit <- readRDS("fits/fit_hs.rds")
 y_rep <- extract(fit, "y_rep")$y_rep
 dim(y_rep) <- c(dim(y_rep)[1], prod(dim(y_rep)[-1])) # flatten 3rd dim
 

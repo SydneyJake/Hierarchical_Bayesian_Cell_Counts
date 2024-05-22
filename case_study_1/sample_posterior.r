@@ -24,7 +24,7 @@ stan_data = list(R          = 23,
                  y          = data$y)
 
 # Compile the model
-mod <- cmdstan_model("models/model_poiss.stan")
+mod <- cmdstan_model("models/model_poiss_par.stan", cpp_options=list(stan_threads = TRUE))
 
 # fit the model
 fit <- mod$sample(data            = stan_data,

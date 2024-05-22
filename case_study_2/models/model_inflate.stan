@@ -1,3 +1,14 @@
+functions{
+  int num_zeros(array[] int y){
+    int sum = 0;
+    for(n in 1:size(y)){
+      if(y[n] == 0){
+        sum += 1;
+      }
+    }
+    return sum;
+  }
+}
 data{
   int                                A;          // Number of animals
   int                                R;          // Number of regions
@@ -8,11 +19,30 @@ data{
 transformed data{
   int<lower=0> N = A*R;
   array[N] int y_vec;
+  int<lower=0> N_zero;
 
   // Flatten the array
   for(a in 1:A){
     for(r in 1:R){
       y_vec[(a - 1) * R + r] = y[a,r];
+    }
+  }
+
+  N_zero = num_zeros(y_vec);
+  array[N - N_zero] int<lower=1> y_nonzero_idx;
+  array[N_zero]     int<lower=1> y_zero_idx;
+
+  int zero_count    = 0;
+  int nonzero_count = 0;
+
+  for(n in 1:N){
+    if(y_vec[n] == 0){
+      zero_count += 1;
+      y_zero_idx[zero_count] = n;
+    }
+    else{
+      nonzero_count += 1;
+      y_nonzero_idx[nonzero_count] = n;
     }
   }
 }
@@ -34,9 +64,6 @@ transformed parameters{
   }
 }
 model{
-
-  pi ~ beta(1,5);
-
   // Population parameters
   for(i in 1:G){
     tau[i]   ~ normal(0, log(1.05));
@@ -51,15 +78,12 @@ model{
   // inflation
   pi ~ beta(1, 5);
 
-  // Observed Data
-  for(i in 1:N){
-    if(y_vec[i]==0){
-      target += log_sum_exp(log(pi), log1m(pi) + poisson_log_lpmf(0 | gamma_vec[i]));
-    }
-    else{
-      target += log1m(pi) + poisson_log_lpmf(y_vec[i] | gamma_vec[i]);
-    }
+  // observed data
+  for(n in 1:size(y_zero_idx)){
+    target += log_sum_exp(log(pi), log1m(pi) + poisson_log_lpmf(0 | gamma_vec[y_zero_idx[n]]));
   }
+  target += nonzero_count * log1m(pi);
+  target += poisson_log_lpmf(y_vec[y_nonzero_idx] | gamma_vec[y_nonzero_idx]);
 }
 generated quantities{
   array[A, R] int y_rep; // posterior predictions
